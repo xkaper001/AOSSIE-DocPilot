@@ -15,7 +15,7 @@ Before you begin contributing, please ensure you have:
 1. Fork the repository on GitHub
 2. Clone your fork locally:
    ```bash
-   git clone https://github.com/YOUR_USERNAME/DocPilot.git
+   git clone https://github.com/xkaper001/DocPilot.git
    cd DocPilot
    ```
 3. Follow the [Setup Instructions](./docs/SETUP.md) to get the project running
