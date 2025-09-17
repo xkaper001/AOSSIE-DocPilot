@@ -1,19 +1,32 @@
 <div align="center">
 <h1> 🩺 DocPilot - A Next Gen EMR App </h1>
+
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![Flutter](https://img.shields.io/badge/Flutter-02569B?style=flat&logo=flutter&logoColor=white)](https://flutter.dev)
+[![Contributions Welcome](https://img.shields.io/badge/contributions-welcome-brightgreen.svg?style=flat)](CONTRIBUTING.md)
+
 </div>
 
 ![](docs/assets/docpilot_preview.gif)
 
-DocPilot aims to overcome the limitations of traditional Electronic Medical Record (EMR) systems, which are frequently cumbersome, costly, and challenging for healthcare providers to navigate. By utilizing advanced AI for transcription and data extraction, DocPilot eliminates the need for manual data entry, streamlining record management and enhancing data accuracy. This innovative approach addresses the inefficiencies of conventional EMR systems, promoting a more effective healthcare delivery system. 
+**DocPilot** revolutionizes healthcare by transforming traditional Electronic Medical Record (EMR) systems through the power of AI. Our intelligent platform eliminates manual data entry by converting doctor-patient conversations into structured prescriptions, making healthcare delivery faster, more accurate, and incredibly efficient.
 
-## 💻 Technologies Used
+## ✨ What Makes DocPilot Special?
 
-- 🎯 Flutter & Dart
-- 🗄️ Appwrite
-- 🤖 Google Gemini API (gen-ai)
-- 🗣️ Deepgram’s `nova-3-medical` model API (leading  in medical transcription, speech-to-text)
+🗣️ **Voice-to-Prescription**: Convert consultation recordings directly into structured prescriptions  
+🤖 **AI-Powered**: Advanced medical transcription and data extraction  
+📅 **Integrated Scheduling**: Seamless appointment management system  
+🔒 **Secure & Compliant**: Digital signatures with PFX certificates  
+📱 **Cross-Platform**: Available on mobile and desktop  
 
-##  App Preview
+## 💻 Tech Stack
+
+- 🎯 **Frontend**: Flutter & Dart
+- 🗄️ **Backend**: Appwrite
+- 🤖 **AI**: Google Gemini API + Deepgram's medical transcription
+- 📄 **Documents**: Syncfusion PDF generation
+
+##  📱 App Preview
 
 <div align="center">
   
@@ -33,86 +46,101 @@ DocPilot aims to overcome the limitations of traditional Electronic Medical Reco
 ## 🎨 Design Prototype
 Check out our app's interface on Figma: [Figma Design Link](https://www.figma.com/design/pD32RZaskUitWMr7nv8nfy/DocPilot?node-id=0-1&t=YoRZ8aAP355lRChq-1)
 
-## Folder Structure
+## 🚀 Quick Start
 
-A brief overview of the folder structure is defined in
+### 📋 Prerequisites
+- Flutter SDK installed
+- Dart SDK (comes with Flutter)
+- Android Studio or Xcode for mobile development
 
-- [Folder Structure](./docs/FOLDER_STRUCTURE.md)
+### 🛠️ Setup & Installation
+```bash
+# Clone the repository
+git clone https://github.com/xkaper001/DocPilot.git
+cd DocPilot
 
-## 🛠️ Setup Instructions
-Our detailed step-by-step guide will help you get up and running:
+# Install dependencies
+flutter pub get
 
-- 📄 [Setup Process](./docs/SETUP.md)
+# Generate required files
+flutter pub run build_runner build --delete-conflicting-outputs
 
-## ❓ How does DocPilot solve the problem?
+# Run the app
+flutter run
+```
 
-DocPilot addresses the challenges of legacy EMR systems by radically simplifying the process for medical professionals:
+For detailed setup instructions, see our [Setup Guide](./docs/SETUP.md).
 
-### 1️⃣ Conversational AI Integration 🗣️🤖
+## 📚 Documentation
 
-By capturing the entire consultation audio, DocPilot utilizes cutting-edge speech-to-text and language model APIs to reliably transcribe and extract critical medical data in real time. This removes the need for manual data entry and minimizes errors.
+| Document | Description |
+|----------|-------------|
+| [Setup Guide](./docs/SETUP.md) | Complete installation and setup instructions |
+| [Technical Overview](./TECHNICAL_OVERVIEW.md) | Detailed technical architecture and workflow |
+| [Folder Structure](./docs/FOLDER_STRUCTURE.md) | Project organization and structure |
+| [Contributing](./CONTRIBUTING.md) | How to contribute to DocPilot |
+| [Code of Conduct](./CODE_OF_CONDUCT.md) | Community guidelines and standards |
 
-### 2️⃣ Streamlined Workflow ⚡
+## 🌟 Key Features
 
-Instead of navigating multiple disparate systems, doctors access a single application that automatically generates structured prescriptions from their conversations. This leads to:
+### 🗣️ Conversational Prescription Generation
+- Convert voice recordings to structured prescriptions
+- Medical-grade transcription accuracy
+- AI-powered data extraction
 
-- 📝 **Reduced Administrative Burden**: No more time wasted on manual transcription and record keeping.
-- ✅ **Improved Accuracy**: Automatic extraction and prompt correction capabilities ensure critical medical details are correctly recorded.
-- ⏱️ **Faster Patient Turnaround**: With a digital-first approach, prescriptions can be reviewed, signed, and shared almost instantaneously.
+### 📄 Automated Document Workflow
+- Seamless audio upload and processing
+- Real-time prescription generation
+- Editable output for doctor review
 
-### 3️⃣ Integrated OPD Appointment Management 📅
+### 📅 OPD Appointment Management
+- Integrated calendar system
+- Real-time scheduling
+- Patient booking capabilities
 
-Incorporating scheduling capabilities via a calendar module lets doctors manage consultations and follow-ups from within the same ecosystem. This end-to-end integration increases efficiency and ensures continuity of care.
+### 🎨 User Experience
+- Clean, responsive Flutter UI
+- Cross-platform compatibility
+- Accessibility-focused design
 
-### 4️⃣ Secure and Compliant Data Handling 🔒
+### 🖋️ Secure PDF Generation
+- Digital signature support
+- PFX certificate integration
+- Biometric verification
 
-With robust authentication, digital PDF signing (using individual PFX certificates), and secure storage practices, DocPilot is built to meet data security standards and instill trust among its users.
+## 🤝 Contributing
 
-## 🌟 Key Features:
+We welcome contributions from the community! Whether you're a developer, designer, or healthcare professional, there are many ways to help improve DocPilot.
 
-### 🗣️ Conversational Prescription Generation:
+- 🐛 [Report Issues](https://github.com/xkaper001/DocPilot/issues)
+- 💡 [Request Features](https://github.com/xkaper001/DocPilot/issues)
+- 🔧 [Submit Pull Requests](https://github.com/xkaper001/DocPilot/pulls)
+- 📖 [Improve Documentation](./CONTRIBUTING.md)
 
-- Uses Deepgram’s medical transcription API to convert recorded consultations into text. 
-- Leverages Google GenAI (e.g., gemini-pro) to parse the transcription and generate a structured JSON prescription that includes symptoms, diagnosis, medications (with dosage and frequency), tests, and follow-up instructions.
+Please read our [Contributing Guidelines](./CONTRIBUTING.md) and [Code of Conduct](./CODE_OF_CONDUCT.md) before getting started.
 
-### 📄 Automated Document Workflow:
+## 📜 License
 
-- **Upload**: The doctor’s audio consultation is uploaded and stored securely using Appwrite’s storage.
-- **Processing**: An Appwrite function orchestrates the transcription and AI extraction steps.
-- **Output**: The structured output is rendered as an editable prescription on the doctor’s dashboard.
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
-### 📅 OPD Appointment Management:
+## 🙏 Acknowledgments
 
-- Integration with the `syncfusion_flutter_calendar` enables real-time scheduling, displays upcoming appointments on the doctor’s dashboard, and allows patients to book consultations directly.
+- **Healthcare Professionals** for valuable insights and feedback
+- **Open Source Community** for amazing tools and libraries
+- **Contributors** who help make DocPilot better every day
 
-### 🎨 User Experience & Interface:
+## 📞 Support
 
-- Designed in Flutter with a clean, responsive UI.
-- Uses state management (BLoC) and dependency injection (GetIt) under a Clean Architecture paradigm to ensure maintainability and scalability.
+- 💬 [GitHub Discussions](https://github.com/xkaper001/DocPilot/discussions)
+- 🐛 [Report Issues](https://github.com/xkaper001/DocPilot/issues)
+- 📧 Contact maintainers for sensitive matters
 
-### 🖋️ Secure PDF Generation & Signing:
+---
 
-- The app generates PDF prescriptions using `syncfusion_flutter_pdf`.
-- Implements a digital signing mechanism using individual PFX certificates generated per doctor, ensuring the prescription integrity and authenticity, backed by biometric verification on the client side.
+<div align="center">
 
-## 🔄 Workflow Overview
+**Made with ❤️ for better healthcare**
 
-### 🎤 Audio Upload & URL Retrieval:
+[⭐ Star us on GitHub](https://github.com/xkaper001/DocPilot) • [🍴 Fork the project](https://github.com/xkaper001/DocPilot/fork) • [📖 Read the docs](./docs/)
 
-The doctor initiates the process by recording and uploading the consultation audio, which is stored on Appwrite and generates a publicly accessible URL.
-
-### 🗣️ Transcription via Deepgram:
-
-An Appwrite function calls Deepgram’s nova-3-medical model to convert audio into text, ensuring high accuracy in medical terminology.
-
-### 🤖 Extraction with Google GenAI:
-
-The transcription is then sent to Google GenAI with a prompt that instructs the model to extract relevant medical data and output a structured JSON.
-
-### 📝 Prescription Review & PDF Generation:
-
-The app parses the JSON, allowing the doctor to review the prescription. Once approved, the prescription is converted into a PDF and digitally signed with the doctor’s PFX certificate.
-
-### 📅 OPD Scheduling Integration:
-
-Patients and doctors manage and schedule appointments seamlessly through an integrated calendar view.
+</div>
