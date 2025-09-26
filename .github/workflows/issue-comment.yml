@@ -6,6 +6,8 @@ on:
 
 jobs:
   add-comment:
+    permissions:
+      issues: write
     runs-on: ubuntu-latest
     steps:
       - name: Add comment to new issue
