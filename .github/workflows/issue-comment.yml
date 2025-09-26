@@ -19,8 +19,9 @@ jobs:
               issue_number: context.issue.number,
               owner: context.repo.owner,
               repo: context.repo.repo,
-              body: "👋 Thanks for opening this issue and contributing!
-              \n\nOur reviewers will check it soon 🚀
-              \n\n📘 If you’d like to know more about contributing, 
-              please read our [CONTRIBUTING.md](./CONTRIBUTING.md)."
+          body: `👋 Thanks for opening this issue and contributing!
+
+          Our reviewers will check it soon 🚀
+
+          📘 If you’d like to know more about contributing, please read our [CONTRIBUTING.md](./CONTRIBUTING.md).`
             })
