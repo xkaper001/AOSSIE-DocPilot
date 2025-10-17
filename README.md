@@ -161,13 +161,12 @@ Please read our [Contributing Guidelines](./CONTRIBUTING.md) and [Code of Conduc
 
 ## ✨ Contributors
 
-#### Thanks to all the wonderful contributors 💖
+Thanks to all the wonderful contributors 💖
 
-<a href="https://github.com/xkaper001/DocPilot/graphs/contributors">
-  <img src="https://contrib.rocks/image?repo=xkaper001/DocPilot" />
-</a>
+[![Contributors](https://contrib.rocks/image?repo=xkaper001/DocPilot)](https://github.com/xkaper001/DocPilot/graphs/contributors)
 
 ---
+
 
 ## 📜 License
 
