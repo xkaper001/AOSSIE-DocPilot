@@ -8,7 +8,7 @@
 </p>
 
 <div align="center">
-  <img src="assets/gssoc.png" alt="GSSOC" width="80%">
+  <img src="docs/assets/gssoc.png" alt="GSSOC" width="80%">
 </div>
 
 <table align="center">
@@ -114,7 +114,7 @@ For detailed setup instructions, see our [Setup Guide](./docs/SETUP.md).
 | Document | Description |
 |----------|-------------|
 | [Setup Guide](./docs/SETUP.md) | Complete installation and setup instructions |
-| [Technical Overview](./TECHNICAL_OVERVIEW.md) | Detailed technical architecture and workflow |
+| [Technical Overview](./docs/TECHNICAL_OVERVIEW.md) | Detailed technical architecture and workflow |
 | [Folder Structure](./docs/FOLDER_STRUCTURE.md) | Project organization and structure |
 | [Contributing](./CONTRIBUTING.md) | How to contribute to DocPilot |
 | [Code of Conduct](./CODE_OF_CONDUCT.md) | Community guidelines and standards |
