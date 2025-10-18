@@ -9,6 +9,8 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
+  docpilot_core:
+    path: ../docpilot_core
 
 dev_dependencies:
   flutter_test:
