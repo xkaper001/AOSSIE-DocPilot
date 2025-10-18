@@ -87,17 +87,158 @@ class CustomDropdown<T> extends StatefulWidget {
 }
 
 class _CustomDropdownState<T> extends State<CustomDropdown<T>> {
+  final LayerLink _layerLink = LayerLink();
+  OverlayEntry? _dropdownOverlayEntry;
+
+  void _showDropdownOverlay(FormFieldState<T> field) {
+    if (!widget.enabled || widget.items.isEmpty) return;
+    final theme = Theme.of(context);
+    final RenderBox renderBox = context.findRenderObject() as RenderBox;
+    final Size size = renderBox.size;
+
+    TextEditingController searchController = TextEditingController();
+    String query = '';
+
+    _dropdownOverlayEntry = OverlayEntry(
+      builder: (context) {
+        return Positioned(
+          width: size.width,
+          child: CompositedTransformFollower(
+            link: _layerLink,
+            showWhenUnlinked: false,
+            offset: Offset(0, size.height + 8),
+            child: Material(
+              color: theme.colorScheme.surface,
+              elevation: 4,
+              borderRadius: BorderRadius.circular(16),
+              child: StatefulBuilder(
+                builder: (context, setState) {
+                  final filteredItems = widget.enableSearch && query.isNotEmpty
+                      ? widget.items.where((item) {
+                          final itemText =
+                              widget.itemBuilder(item).toLowerCase();
+                          return itemText.contains(query.toLowerCase());
+                        }).toList()
+                      : widget.items;
+                  return Container(
+                    constraints: BoxConstraints(maxHeight: 400),
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        if (widget.enableSearch)
+                          Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: TextField(
+                              controller: searchController,
+                              decoration: InputDecoration(
+                                hintText: 'Search...',
+                                prefixIcon: const Icon(Icons.search, size: 20),
+                                suffixIcon: query.isNotEmpty
+                                    ? IconButton(
+                                        icon: const Icon(Icons.clear, size: 20),
+                                        onPressed: () {
+                                          searchController.clear();
+                                          setState(() {
+                                            query = '';
+                                          });
+                                        },
+                                      )
+                                    : null,
+                                border: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(8),
+                                  borderSide: BorderSide(
+                                    color: theme.colorScheme.outline,
+                                    width: 1,
+                                  ),
+                                ),
+                                contentPadding: const EdgeInsets.symmetric(
+                                  horizontal: 12,
+                                  vertical: 8,
+                                ),
+                                isDense: true,
+                              ),
+                              onChanged: (value) {
+                                setState(() {
+                                  query = value;
+                                });
+                              },
+                            ),
+                          ),
+                        Flexible(
+                          child: ListView.builder(
+                            shrinkWrap: true,
+                            itemCount: filteredItems.length,
+                            itemBuilder: (context, index) {
+                              final item = filteredItems[index];
+                              final isSelected = item == _selectedValue;
+                              return InkWell(
+                                onTap: () {
+                                  _removeDropdownOverlay();
+                                  if (item != _selectedValue) {
+                                    setState(() {
+                                      _selectedValue = item;
+                                    });
+                                    field.didChange(item);
+                                    widget.onChanged?.call(item);
+                                  }
+                                },
+                                borderRadius: BorderRadius.circular(12),
+                                child: Container(
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 12,
+                                    vertical: 16,
+                                  ),
+                                  decoration: BoxDecoration(
+                                    color: isSelected
+                                        ? theme.colorScheme.primary
+                                            .withOpacity(0.1)
+                                        : Colors.transparent,
+                                    borderRadius: BorderRadius.circular(12),
+                                  ),
+                                  child: Text(
+                                    widget.itemBuilder(item),
+                                    style: theme.textTheme.bodyMedium?.copyWith(
+                                      color: isSelected
+                                          ? theme.colorScheme.primary
+                                          : theme.colorScheme.onSurface,
+                                    ),
+                                  ),
+                                ),
+                              );
+                            },
+                          ),
+                        ),
+                      ],
+                    ),
+                  );
+                },
+              ),
+            ),
+          ),
+        );
+      },
+    );
+    Overlay.of(context).insert(_dropdownOverlayEntry!);
+  }
+
+  void _removeDropdownOverlay() {
+    _dropdownOverlayEntry?.remove();
+    _dropdownOverlayEntry = null;
+  }
+
   @override
   void didUpdateWidget(covariant CustomDropdown<T> oldWidget) {
     super.didUpdateWidget(oldWidget);
 
-    if (widget.initialValue != oldWidget.initialValue || widget.items != oldWidget.items) {
+    if (widget.initialValue != oldWidget.initialValue ||
+        widget.items != oldWidget.items) {
       setState(() {
         _selectedValue = widget.initialValue;
       });
     }
 
-    if (widget.placeholder != oldWidget.placeholder || widget.initialValue != oldWidget.initialValue) {
+    if (widget.placeholder != oldWidget.placeholder ||
+        widget.initialValue != oldWidget.initialValue) {
       _searchController.text = '';
     }
 
@@ -111,11 +252,11 @@ class _CustomDropdownState<T> extends State<CustomDropdown<T>> {
       _focusNode.addListener(_handleFocusChange);
     }
   }
+
   late FocusNode _focusNode;
   late bool _createdFocusNode;
   T? _selectedValue;
   bool _isFocused = false;
-  String _searchQuery = '';
   late TextEditingController _searchController;
 
   @override
@@ -148,17 +289,6 @@ class _CustomDropdownState<T> extends State<CustomDropdown<T>> {
     });
   }
 
-  List<T> _getFilteredItems() {
-    if (!widget.enableSearch || _searchQuery.isEmpty) {
-      return widget.items;
-    }
-    final query = _searchQuery.toLowerCase();
-    return widget.items.where((item) {
-      final itemText = widget.itemBuilder(item).toLowerCase();
-      return itemText.contains(query);
-    }).toList();
-  }
-
   Color _getBorderColor(ThemeData theme, {required bool hasError}) {
     if (!widget.enabled) {
       return theme.colorScheme.outlineVariant;
@@ -177,140 +307,6 @@ class _CustomDropdownState<T> extends State<CustomDropdown<T>> {
       return 2.0;
     }
     return _isFocused ? 2.0 : 1.5;
-  }
-
-  Future<void> _showDropdownMenu(
-      BuildContext context, FormFieldState<T> field) async {
-    if (!widget.enabled || widget.items.isEmpty) return;
-
-    final theme = Theme.of(context);
-    final RenderBox renderBox = context.findRenderObject() as RenderBox;
-    final Offset offset = renderBox.localToGlobal(Offset.zero);
-    final Size size = renderBox.size;
-
-    // Show a custom dialog with search and filtered list
-    final T? selected = await showDialog<T>(
-      context: context,
-      barrierDismissible: true,
-      builder: (dialogContext) {
-        String query = '';
-        TextEditingController searchController = TextEditingController();
-        return StatefulBuilder(
-          builder: (context, setState) {
-            final filteredItems = widget.enableSearch && query.isNotEmpty
-                ? widget.items.where((item) {
-                    final itemText = widget.itemBuilder(item).toLowerCase();
-                    return itemText.contains(query.toLowerCase());
-                  }).toList()
-                : widget.items;
-            return Dialog(
-              insetPadding: EdgeInsets.only(
-                left: offset.dx,
-                top: offset.dy + size.height + 8,
-                right: 24,
-                bottom: 24,
-              ),
-              backgroundColor: theme.colorScheme.surface,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(16),
-              ),
-              child: Container(
-                width: size.width,
-                constraints: BoxConstraints(maxHeight: 400),
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    if (widget.enableSearch)
-                      Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: TextField(
-                          controller: searchController,
-                          decoration: InputDecoration(
-                            hintText: 'Search...',
-                            prefixIcon: const Icon(Icons.search, size: 20),
-                            suffixIcon: query.isNotEmpty
-                                ? IconButton(
-                                    icon: const Icon(Icons.clear, size: 20),
-                                    onPressed: () {
-                                      searchController.clear();
-                                      setState(() {
-                                        query = '';
-                                      });
-                                    },
-                                  )
-                                : null,
-                            border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(8),
-                              borderSide: BorderSide(
-                                color: theme.colorScheme.outline,
-                                width: 1,
-                              ),
-                            ),
-                            contentPadding: const EdgeInsets.symmetric(
-                              horizontal: 12,
-                              vertical: 8,
-                            ),
-                            isDense: true,
-                          ),
-                          onChanged: (value) {
-                            setState(() {
-                              query = value;
-                            });
-                          },
-                        ),
-                      ),
-                    Flexible(
-                      child: ListView.builder(
-                        shrinkWrap: true,
-                        itemCount: filteredItems.length,
-                        itemBuilder: (context, index) {
-                          final item = filteredItems[index];
-                          final isSelected = item == _selectedValue;
-                          return InkWell(
-                            onTap: () {
-                              Navigator.of(dialogContext).pop(item);
-                            },
-                            borderRadius: BorderRadius.circular(12),
-                            child: Container(
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 12,
-                                vertical: 16,
-                              ),
-                              decoration: BoxDecoration(
-                                color: isSelected
-                                    ? theme.colorScheme.primary.withOpacity(0.1)
-                                    : Colors.transparent,
-                                borderRadius: BorderRadius.circular(12),
-                              ),
-                              child: Text(
-                                widget.itemBuilder(item),
-                                style: theme.textTheme.bodyMedium?.copyWith(
-                                  color: isSelected
-                                      ? theme.colorScheme.primary
-                                      : theme.colorScheme.onSurface,
-                                ),
-                              ),
-                            ),
-                          );
-                        },
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            );
-          },
-        );
-      },
-    );
-
-    if (selected != null && selected != _selectedValue) {
-      setState(() {
-        _selectedValue = selected;
-      });
-      field.didChange(selected);
-      widget.onChanged?.call(selected);
-    }
   }
 
   String _getDisplayText() {
@@ -354,7 +350,6 @@ class _CustomDropdownState<T> extends State<CustomDropdown<T>> {
           crossAxisAlignment: CrossAxisAlignment.start,
           mainAxisSize: MainAxisSize.min,
           children: [
-            // Label
             if (widget.label != null) ...[
               Text(
                 widget.label!,
@@ -362,51 +357,49 @@ class _CustomDropdownState<T> extends State<CustomDropdown<T>> {
               ),
               const SizedBox(height: 8),
             ],
-
-            // Dropdown Field
-            InkWell(
-              onTap: widget.enabled
-                  ? () => _showDropdownMenu(context, field)
-                  : null,
-              onFocusChange: null,
-              focusNode: _focusNode,
-              borderRadius: BorderRadius.circular(12),
-              child: Container(
-                height: 48,
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 16,
-                  vertical: 12,
-                ),
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(12),
-                  border: Border.all(
-                    color: _getBorderColor(theme, hasError: hasError),
-                    width: _getBorderWidth(hasError: hasError),
+            CompositedTransformTarget(
+              link: _layerLink,
+              child: InkWell(
+                onTap:
+                    widget.enabled ? () => _showDropdownOverlay(field) : null,
+                onFocusChange: null,
+                focusNode: _focusNode,
+                borderRadius: BorderRadius.circular(12),
+                child: Container(
+                  height: 48,
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 16,
+                    vertical: 12,
                   ),
-                ),
-                child: Row(
-                  children: [
-                    Expanded(
-                      child: Text(
-                        _getDisplayText(),
-                        style: hasValue
-                            ? (widget.enabled ? inputStyle : disabledStyle)
-                            : placeholderStyle,
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(12),
+                    border: Border.all(
+                      color: _getBorderColor(theme, hasError: hasError),
+                      width: _getBorderWidth(hasError: hasError),
+                    ),
+                  ),
+                  child: Row(
+                    children: [
+                      Expanded(
+                        child: Text(
+                          _getDisplayText(),
+                          style: hasValue
+                              ? (widget.enabled ? inputStyle : disabledStyle)
+                              : placeholderStyle,
+                        ),
                       ),
-                    ),
-                    Icon(
-                      widget.suffixIcon ?? Icons.keyboard_arrow_down,
-                      size: 20,
-                      color: widget.enabled
-                          ? theme.colorScheme.onSurface.withOpacity(0.7)
-                          : theme.disabledColor,
-                    ),
-                  ],
+                      Icon(
+                        widget.suffixIcon ?? Icons.keyboard_arrow_down,
+                        size: 20,
+                        color: widget.enabled
+                            ? theme.colorScheme.onSurface.withOpacity(0.7)
+                            : theme.disabledColor,
+                      ),
+                    ],
+                  ),
                 ),
               ),
             ),
-
-            // Helper Text or Error Text
             if (widget.helperText != null || hasError) ...[
               const SizedBox(height: 8),
               Text(
