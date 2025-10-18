@@ -167,15 +167,16 @@ class FormValidators {
       return 'Date of birth is required';
     }
 
-    final now = DateTime.now();
-    final age = now.year - value.year;
-
+    final today = DateTime.now();
+    if (value.isAfter(today)) {
+      return 'Date of birth cannot be in the future';
+    }
+    int age = today.year - value.year;
+    final hasHadBirthdayThisYear = (today.month > value.month) ||
+        (today.month == value.month && today.day >= value.day);
+    if (!hasHadBirthdayThisYear) age--;
     if (age < minAge) {
       return 'You must be at least $minAge years old';
-    }
-
-    if (value.isAfter(now)) {
-      return 'Date of birth cannot be in the future';
     }
 
     return null;

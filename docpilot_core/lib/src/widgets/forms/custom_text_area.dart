@@ -4,15 +4,15 @@ import 'package:flutter/services.dart';
 /// A custom text area component for multi-line text input.
 ///
 /// This component automatically adapts to the app's theme colors.
-/// It uses Theme.of(context).primaryColor for focus states and
+/// It uses Theme.of(context).colorScheme.primary for focus states and
 /// Theme.of(context).colorScheme.error for error states.
 ///
 /// Features:
 /// - Multi-line input with expandable height
 /// - Multiple states: empty, typing, filled, error, disabled
 /// - Optional label and helper text
-/// - Form validation support
-/// - Theme-aware styling
+/// - Form validation support with FormField integration
+/// - Theme-aware styling (Material 3 compliant)
 ///
 /// Example:
 /// ```dart
@@ -116,24 +116,36 @@ class CustomTextArea extends StatefulWidget {
 class _CustomTextAreaState extends State<CustomTextArea> {
   late TextEditingController _controller;
   late FocusNode _focusNode;
+  late bool _createdController;
+  late bool _createdFocusNode;
   bool _isFocused = false;
 
   @override
   void initState() {
     super.initState();
+    _createdController = widget.controller == null;
     _controller =
         widget.controller ?? TextEditingController(text: widget.initialValue);
+    _createdFocusNode = widget.focusNode == null;
     _focusNode = widget.focusNode ?? FocusNode();
-    _focusNode.addListener(_handleFocusChange);
+
+    // Only add listener if we created the FocusNode
+    if (_createdFocusNode) {
+      _focusNode.addListener(_handleFocusChange);
+    }
   }
 
   @override
   void dispose() {
-    if (widget.controller == null) {
+    // Always remove listener if we added it
+    if (_createdFocusNode) {
+      _focusNode.removeListener(_handleFocusChange);
+    }
+    // Only dispose if we created them
+    if (_createdController) {
       _controller.dispose();
     }
-    if (widget.focusNode == null) {
-      _focusNode.removeListener(_handleFocusChange);
+    if (_createdFocusNode) {
       _focusNode.dispose();
     }
     super.dispose();
@@ -145,21 +157,21 @@ class _CustomTextAreaState extends State<CustomTextArea> {
     });
   }
 
-  Color _getBorderColor(ThemeData theme) {
+  Color _getBorderColor(ThemeData theme, {required bool hasError}) {
     if (!widget.enabled) {
       return theme.colorScheme.outlineVariant;
     }
-    if (widget.errorText != null) {
+    if (hasError) {
       return theme.colorScheme.error;
     }
     if (_isFocused) {
-      return theme.primaryColor;
+      return theme.colorScheme.primary;
     }
     return theme.colorScheme.outline;
   }
 
-  double _getBorderWidth() {
-    if (widget.errorText != null) {
+  double _getBorderWidth({required bool hasError}) {
+    if (hasError) {
       return 2.0;
     }
     return _isFocused ? 2.0 : 1.5;
@@ -169,7 +181,6 @@ class _CustomTextAreaState extends State<CustomTextArea> {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final textTheme = theme.textTheme;
-    final hasError = widget.errorText != null;
 
     // Text styles from theme
     final labelStyle = textTheme.labelLarge;
@@ -187,71 +198,86 @@ class _CustomTextAreaState extends State<CustomTextArea> {
       color: theme.disabledColor,
     );
 
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        // Label
-        if (widget.label != null) ...[
-          Text(
-            widget.label!,
-            style: labelStyle,
-          ),
-          const SizedBox(height: 8),
-        ],
+    return FormField<String>(
+      initialValue: widget.initialValue ?? _controller.text,
+      validator: widget.validator,
+      autovalidateMode: AutovalidateMode.disabled,
+      builder: (field) {
+        final effectiveErrorText = widget.errorText ?? field.errorText;
+        final hasError = effectiveErrorText != null;
 
-        // Text Area
-        Container(
-          constraints: BoxConstraints(
-            minHeight:
-                widget.minLines * 20.0 + 24, // line height * lines + padding
-          ),
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(12),
-            border: Border.all(
-              color: _getBorderColor(theme),
-              width: _getBorderWidth(),
-            ),
-          ),
-          child: TextField(
-            controller: _controller,
-            focusNode: _focusNode,
-            enabled: widget.enabled,
-            keyboardType: widget.keyboardType ?? TextInputType.multiline,
-            textInputAction: widget.textInputAction,
-            inputFormatters: widget.inputFormatters,
-            maxLength: widget.maxLength,
-            minLines: widget.minLines,
-            maxLines: widget.maxLines,
-            autofocus: widget.autofocus,
-            textCapitalization: widget.textCapitalization,
-            onChanged: widget.onChanged,
-            onEditingComplete: widget.onEditingComplete,
-            onSubmitted: widget.onSubmitted,
-            style: widget.enabled ? inputStyle : disabledStyle,
-            decoration: InputDecoration(
-              hintText: widget.placeholder,
-              hintStyle: placeholderStyle,
-              border: InputBorder.none,
-              contentPadding: const EdgeInsets.symmetric(
-                horizontal: 16,
-                vertical: 12,
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            // Label
+            if (widget.label != null) ...[
+              Text(
+                widget.label!,
+                style: labelStyle,
               ),
-              counterText: '', // Hide character counter
-              isDense: true,
-            ),
-          ),
-        ),
+              const SizedBox(height: 8),
+            ],
 
-        // Helper Text or Error Text
-        if (widget.helperText != null || hasError) ...[
-          const SizedBox(height: 8),
-          Text(
-            hasError ? widget.errorText! : widget.helperText!,
-            style: hasError ? errorStyle : helperStyle,
-          ),
-        ],
-      ],
+            // Text Area
+            Container(
+              constraints: BoxConstraints(
+                minHeight: widget.minLines * 20.0 +
+                    24, // line height * lines + padding
+              ),
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(12),
+                border: Border.all(
+                  color: _getBorderColor(theme, hasError: hasError),
+                  width: _getBorderWidth(hasError: hasError),
+                ),
+              ),
+              child: TextField(
+                controller: _controller,
+                focusNode: _focusNode,
+                enabled: widget.enabled,
+                keyboardType: widget.keyboardType ?? TextInputType.multiline,
+                textInputAction: widget.textInputAction,
+                inputFormatters: widget.inputFormatters,
+                maxLength: widget.maxLength,
+                minLines: widget.minLines,
+                maxLines: widget.maxLines,
+                autofocus: widget.autofocus,
+                textCapitalization: widget.textCapitalization,
+                onChanged: (value) {
+                  field.didChange(value);
+                  widget.onChanged?.call(value);
+                },
+                onEditingComplete: widget.onEditingComplete,
+                onSubmitted: widget.onSubmitted,
+                style: widget.enabled ? inputStyle : disabledStyle,
+                decoration: InputDecoration(
+                  hintText: widget.placeholder,
+                  hintStyle: placeholderStyle,
+                  border: InputBorder.none,
+                  contentPadding: const EdgeInsets.symmetric(
+                    horizontal: 16,
+                    vertical: 12,
+                  ),
+                  counterText: '', // Hide character counter
+                  isDense: true,
+                ),
+              ),
+            ),
+
+            // Helper Text or Error Text
+            if (widget.helperText != null || hasError) ...[
+              const SizedBox(height: 8),
+              Text(
+                hasError ? effectiveErrorText : (widget.helperText ?? ''),
+                style: hasError ? errorStyle : helperStyle,
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
+              ),
+            ],
+          ],
+        );
+      },
     );
   }
 }

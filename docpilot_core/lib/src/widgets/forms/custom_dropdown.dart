@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 /// A custom dropdown component for selecting from a list of options.
 ///
 /// This component automatically adapts to the app's theme colors.
-/// It uses Theme.of(context).primaryColor for focus and selection states.
+/// It uses Theme.of(context).colorScheme.primary for focus and selection states.
 ///
 /// Features:
 /// - Dropdown menu with rounded container
@@ -11,6 +11,7 @@ import 'package:flutter/material.dart';
 /// - Multiple states: empty, selected, error, disabled
 /// - Optional label and helper text
 /// - Form validation support
+/// - Optional search field for filtering items (when enableSearch is true)
 /// - Theme-aware styling
 ///
 /// Example:
@@ -21,6 +22,7 @@ import 'package:flutter/material.dart';
 ///   items: ['USA', 'UK', 'Canada'],
 ///   itemBuilder: (item) => item,
 ///   onChanged: (value) => print(value),
+///   enableSearch: true,
 /// )
 /// ```
 class CustomDropdown<T> extends StatefulWidget {
@@ -86,23 +88,37 @@ class CustomDropdown<T> extends StatefulWidget {
 
 class _CustomDropdownState<T> extends State<CustomDropdown<T>> {
   late FocusNode _focusNode;
+  late bool _createdFocusNode;
   T? _selectedValue;
   bool _isFocused = false;
+  String _searchQuery = '';
+  late TextEditingController _searchController;
 
   @override
   void initState() {
     super.initState();
     _selectedValue = widget.initialValue;
+    _createdFocusNode = widget.focusNode == null;
     _focusNode = widget.focusNode ?? FocusNode();
-    _focusNode.addListener(_handleFocusChange);
+    _searchController = TextEditingController();
+
+    // Only add listener if we created the FocusNode
+    if (_createdFocusNode) {
+      _focusNode.addListener(_handleFocusChange);
+    }
   }
 
   @override
   void dispose() {
-    if (widget.focusNode == null) {
+    // Always remove listener if we added it
+    if (_createdFocusNode) {
       _focusNode.removeListener(_handleFocusChange);
+    }
+    // Only dispose if we created the FocusNode
+    if (widget.focusNode == null) {
       _focusNode.dispose();
     }
+    _searchController.dispose();
     super.dispose();
   }
 
@@ -112,27 +128,39 @@ class _CustomDropdownState<T> extends State<CustomDropdown<T>> {
     });
   }
 
-  Color _getBorderColor(ThemeData theme) {
+  List<T> _getFilteredItems() {
+    if (!widget.enableSearch || _searchQuery.isEmpty) {
+      return widget.items;
+    }
+    final query = _searchQuery.toLowerCase();
+    return widget.items.where((item) {
+      final itemText = widget.itemBuilder(item).toLowerCase();
+      return itemText.contains(query);
+    }).toList();
+  }
+
+  Color _getBorderColor(ThemeData theme, {required bool hasError}) {
     if (!widget.enabled) {
       return theme.colorScheme.outlineVariant;
     }
-    if (widget.errorText != null) {
+    if (hasError) {
       return theme.colorScheme.error;
     }
     if (_isFocused) {
-      return theme.primaryColor;
+      return theme.colorScheme.primary;
     }
     return theme.colorScheme.outline;
   }
 
-  double _getBorderWidth() {
-    if (widget.errorText != null) {
+  double _getBorderWidth({required bool hasError}) {
+    if (hasError) {
       return 2.0;
     }
     return _isFocused ? 2.0 : 1.5;
   }
 
-  Future<void> _showDropdownMenu(BuildContext context) async {
+  Future<void> _showDropdownMenu(
+      BuildContext context, FormFieldState<T> field) async {
     if (!widget.enabled || widget.items.isEmpty) return;
 
     final theme = Theme.of(context);
@@ -140,40 +168,96 @@ class _CustomDropdownState<T> extends State<CustomDropdown<T>> {
     final Offset offset = renderBox.localToGlobal(Offset.zero);
     final Size size = renderBox.size;
 
+    // Reset search when opening menu
+    _searchQuery = '';
+    _searchController.clear();
+
+    // Get overlay for proper positioning
+    final overlay = Overlay.of(context).context.findRenderObject() as RenderBox;
+    final targetRect = Rect.fromLTWH(
+        offset.dx, offset.dy + size.height + 8, size.width, size.height);
+
     final T? selected = await showMenu<T>(
       context: context,
-      position: RelativeRect.fromLTRB(
-        offset.dx,
-        offset.dy + size.height + 8,
-        offset.dx + size.width,
-        offset.dy + size.height + 300,
+      position: RelativeRect.fromRect(
+        targetRect,
+        Offset.zero & overlay.size,
       ),
-      items: widget.items.map((item) {
-        final isSelected = item == _selectedValue;
-        return PopupMenuItem<T>(
-          value: item,
-          child: Container(
-            padding: const EdgeInsets.symmetric(
-              horizontal: 12,
-              vertical: 16,
-            ),
-            decoration: BoxDecoration(
-              color: isSelected
-                  ? theme.primaryColor.withOpacity(0.1)
-                  : Colors.transparent,
-              borderRadius: BorderRadius.circular(12),
-            ),
-            child: Text(
-              widget.itemBuilder(item),
-              style: theme.textTheme.bodyMedium?.copyWith(
-                color: isSelected
-                    ? theme.primaryColor
-                    : theme.colorScheme.onSurface,
-              ),
+      items: [
+        if (widget.enableSearch)
+          PopupMenuItem<T>(
+            enabled: false,
+            child: StatefulBuilder(
+              builder: (context, setState) {
+                return Container(
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                  child: TextField(
+                    controller: _searchController,
+                    decoration: InputDecoration(
+                      hintText: 'Search...',
+                      prefixIcon: const Icon(Icons.search, size: 20),
+                      suffixIcon: _searchQuery.isNotEmpty
+                          ? IconButton(
+                              icon: const Icon(Icons.clear, size: 20),
+                              onPressed: () {
+                                _searchController.clear();
+                                setState(() {
+                                  _searchQuery = '';
+                                });
+                              },
+                            )
+                          : null,
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(8),
+                        borderSide: BorderSide(
+                          color: theme.colorScheme.outline,
+                          width: 1,
+                        ),
+                      ),
+                      contentPadding: const EdgeInsets.symmetric(
+                        horizontal: 12,
+                        vertical: 8,
+                      ),
+                      isDense: true,
+                    ),
+                    onChanged: (value) {
+                      setState(() {
+                        _searchQuery = value;
+                      });
+                    },
+                  ),
+                );
+              },
             ),
           ),
-        );
-      }).toList(),
+        ..._getFilteredItems().map((item) {
+          final isSelected = item == _selectedValue;
+          return PopupMenuItem<T>(
+            value: item,
+            child: Container(
+              padding: const EdgeInsets.symmetric(
+                horizontal: 12,
+                vertical: 16,
+              ),
+              decoration: BoxDecoration(
+                color: isSelected
+                    ? theme.colorScheme.primary.withOpacity(0.1)
+                    : Colors.transparent,
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: Text(
+                widget.itemBuilder(item),
+                style: theme.textTheme.bodyMedium?.copyWith(
+                  color: isSelected
+                      ? theme.colorScheme.primary
+                      : theme.colorScheme.onSurface,
+                ),
+              ),
+            ),
+          );
+        }).toList(),
+      ],
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(16),
       ),
@@ -185,6 +269,7 @@ class _CustomDropdownState<T> extends State<CustomDropdown<T>> {
       setState(() {
         _selectedValue = selected;
       });
+      field.didChange(selected);
       widget.onChanged?.call(selected);
     }
   }
@@ -200,8 +285,6 @@ class _CustomDropdownState<T> extends State<CustomDropdown<T>> {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final textTheme = theme.textTheme;
-    final hasError = widget.errorText != null;
-    final hasValue = _selectedValue != null;
 
     // Text styles from theme
     final labelStyle = textTheme.labelLarge;
@@ -219,73 +302,90 @@ class _CustomDropdownState<T> extends State<CustomDropdown<T>> {
       color: theme.disabledColor,
     );
 
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        // Label
-        if (widget.label != null) ...[
-          Text(
-            widget.label!,
-            style: labelStyle,
-          ),
-          const SizedBox(height: 8),
-        ],
+    return FormField<T>(
+      initialValue: _selectedValue,
+      validator: widget.validator,
+      autovalidateMode: AutovalidateMode.disabled,
+      builder: (field) {
+        final effectiveErrorText = widget.errorText ?? field.errorText;
+        final hasError = effectiveErrorText != null;
+        final hasValue = _selectedValue != null;
 
-        // Dropdown Field
-        InkWell(
-          onTap: widget.enabled ? () => _showDropdownMenu(context) : null,
-          onFocusChange: (focused) {
-            setState(() {
-              _isFocused = focused;
-            });
-          },
-          focusNode: _focusNode,
-          borderRadius: BorderRadius.circular(12),
-          child: Container(
-            height: 48,
-            padding: const EdgeInsets.symmetric(
-              horizontal: 16,
-              vertical: 12,
-            ),
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(12),
-              border: Border.all(
-                color: _getBorderColor(theme),
-                width: _getBorderWidth(),
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            // Label
+            if (widget.label != null) ...[
+              Text(
+                widget.label!,
+                style: labelStyle,
               ),
-            ),
-            child: Row(
-              children: [
-                Expanded(
-                  child: Text(
-                    _getDisplayText(),
-                    style: hasValue
-                        ? (widget.enabled ? inputStyle : disabledStyle)
-                        : placeholderStyle,
+              const SizedBox(height: 8),
+            ],
+
+            // Dropdown Field
+            InkWell(
+              onTap: widget.enabled
+                  ? () => _showDropdownMenu(context, field)
+                  : null,
+              onFocusChange: _createdFocusNode
+                  ? (focused) {
+                      setState(() {
+                        _isFocused = focused;
+                      });
+                    }
+                  : null,
+              focusNode: _focusNode,
+              borderRadius: BorderRadius.circular(12),
+              child: Container(
+                height: 48,
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 16,
+                  vertical: 12,
+                ),
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(12),
+                  border: Border.all(
+                    color: _getBorderColor(theme, hasError: hasError),
+                    width: _getBorderWidth(hasError: hasError),
                   ),
                 ),
-                Icon(
-                  widget.suffixIcon ?? Icons.keyboard_arrow_down,
-                  size: 20,
-                  color: widget.enabled
-                      ? theme.colorScheme.onSurface.withOpacity(0.7)
-                      : theme.disabledColor,
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: Text(
+                        _getDisplayText(),
+                        style: hasValue
+                            ? (widget.enabled ? inputStyle : disabledStyle)
+                            : placeholderStyle,
+                      ),
+                    ),
+                    Icon(
+                      widget.suffixIcon ?? Icons.keyboard_arrow_down,
+                      size: 20,
+                      color: widget.enabled
+                          ? theme.colorScheme.onSurface.withOpacity(0.7)
+                          : theme.disabledColor,
+                    ),
+                  ],
                 ),
-              ],
+              ),
             ),
-          ),
-        ),
 
-        // Helper Text or Error Text
-        if (widget.helperText != null || hasError) ...[
-          const SizedBox(height: 8),
-          Text(
-            hasError ? widget.errorText! : widget.helperText!,
-            style: hasError ? errorStyle : helperStyle,
-          ),
-        ],
-      ],
+            // Helper Text or Error Text
+            if (widget.helperText != null || hasError) ...[
+              const SizedBox(height: 8),
+              Text(
+                hasError ? effectiveErrorText : (widget.helperText ?? ''),
+                style: hasError ? errorStyle : helperStyle,
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
+              ),
+            ],
+          ],
+        );
+      },
     );
   }
 }

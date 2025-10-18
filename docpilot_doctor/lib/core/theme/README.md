@@ -17,8 +17,7 @@ Import the theme system in your files:
 import 'package:docpilot_doctor/core/theme/theme.dart';
 ```
 
-This gives you access to both `Palette` and `AppTheme` classes.
-
+This provides access to both `Palette` and `AppTheme` classes.
 ## Color Palette (`Palette`)
 
 All colors are defined in the `Palette` class and should be used throughout the app for consistency.
@@ -48,7 +47,7 @@ Palette.borderLight      // Light border color (disabled states)
 Palette.error            // Error color
 ```
 
-For complete color documentation, see the patient app's theme README.
+For complete color documentation, see the [patient app's theme README](../../../../docpilot_patient/lib/core/theme/README.md).
 
 ## App Theme (`AppTheme`)
 
@@ -145,4 +144,4 @@ For detailed documentation on:
 - Helper methods
 - Complete color palette
 
-See the comprehensive theme documentation in the patient app's theme README or the main THEME_REFACTORING.md document.
+See the comprehensive theme documentation in the [patient app's theme README](../../../../docpilot_patient/lib/core/theme/README.md) or the [shared library guide](../../../../docs/SHARED_LIBRARY_GUIDE.md).

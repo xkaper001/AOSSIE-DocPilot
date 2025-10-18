@@ -85,6 +85,7 @@ class CustomDatePicker extends StatefulWidget {
 
 class _CustomDatePickerState extends State<CustomDatePicker> {
   late FocusNode _focusNode;
+  late bool _createdFocusNode;
   DateTime? _selectedDate;
   bool _isFocused = false;
 
@@ -92,13 +93,19 @@ class _CustomDatePickerState extends State<CustomDatePicker> {
   void initState() {
     super.initState();
     _selectedDate = widget.initialDate;
+    _createdFocusNode = widget.focusNode == null;
     _focusNode = widget.focusNode ?? FocusNode();
-    _focusNode.addListener(_handleFocusChange);
+    
+    // Only add listener if we created the FocusNode
+    if (_createdFocusNode) {
+      _focusNode.addListener(_handleFocusChange);
+    }
   }
 
   @override
   void dispose() {
-    if (widget.focusNode == null) {
+    // Only remove listener and dispose if we created the FocusNode
+    if (_createdFocusNode) {
       _focusNode.removeListener(_handleFocusChange);
       _focusNode.dispose();
     }
@@ -111,24 +118,34 @@ class _CustomDatePickerState extends State<CustomDatePicker> {
     });
   }
 
-  Color _getBorderColor(ThemeData theme) {
+  Color _getBorderColor(ThemeData theme, {required bool hasError}) {
     if (!widget.enabled) {
       return theme.colorScheme.outlineVariant;
     }
-    if (widget.errorText != null) {
+    if (hasError) {
       return theme.colorScheme.error;
     }
     if (_isFocused) {
-      return theme.primaryColor;
+      return theme.colorScheme.primary;
     }
     return theme.colorScheme.outline;
   }
 
-  double _getBorderWidth() {
-    if (widget.errorText != null) {
+  double _getBorderWidth({required bool hasError}) {
+    if (hasError) {
       return 2.0;
     }
     return _isFocused ? 2.0 : 1.5;
+  }
+
+  String _formatDate(DateTime d, String pattern) {
+    final dd = d.day.toString().padLeft(2, '0');
+    final mm = d.month.toString().padLeft(2, '0');
+    final yyyy = d.year.toString().padLeft(4, '0');
+    return pattern
+        .replaceAll('dd', dd)
+        .replaceAll('MM', mm)
+        .replaceAll('yyyy', yyyy);
   }
 
   Future<void> _selectDate(BuildContext context) async {
@@ -175,11 +192,7 @@ class _CustomDatePickerState extends State<CustomDatePicker> {
 
   String _getDisplayText() {
     if (_selectedDate != null) {
-      // Simple date formatting without intl package
-      final day = _selectedDate!.day.toString().padLeft(2, '0');
-      final month = _selectedDate!.month.toString().padLeft(2, '0');
-      final year = _selectedDate!.year.toString();
-      return '$day/$month/$year';
+      return _formatDate(_selectedDate!, widget.dateFormat);
     }
     return widget.placeholder ?? 'Select date';
   }
@@ -188,7 +201,8 @@ class _CustomDatePickerState extends State<CustomDatePicker> {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final textTheme = theme.textTheme;
-    final hasError = widget.errorText != null;
+    final computedError = widget.errorText ?? widget.validator?.call(_selectedDate);
+    final hasError = computedError != null;
     final hasValue = _selectedDate != null;
 
     // Text styles from theme
@@ -223,11 +237,11 @@ class _CustomDatePickerState extends State<CustomDatePicker> {
         // Date Picker Field
         InkWell(
           onTap: widget.enabled ? () => _selectDate(context) : null,
-          onFocusChange: (focused) {
+          onFocusChange: _createdFocusNode ? (focused) {
             setState(() {
               _isFocused = focused;
             });
-          },
+          } : null,
           focusNode: _focusNode,
           borderRadius: BorderRadius.circular(12),
           child: Container(
@@ -239,8 +253,8 @@ class _CustomDatePickerState extends State<CustomDatePicker> {
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(12),
               border: Border.all(
-                color: _getBorderColor(theme),
-                width: _getBorderWidth(),
+                color: _getBorderColor(theme, hasError: hasError),
+                width: _getBorderWidth(hasError: hasError),
               ),
             ),
             child: Row(
@@ -269,8 +283,12 @@ class _CustomDatePickerState extends State<CustomDatePicker> {
         if (widget.helperText != null || hasError) ...[
           const SizedBox(height: 8),
           Text(
-            hasError ? widget.errorText! : widget.helperText!,
+            hasError 
+                ? computedError
+                : (widget.helperText ?? ''),
             style: hasError ? errorStyle : helperStyle,
+            maxLines: 2,
+            overflow: TextOverflow.ellipsis,
           ),
         ],
       ],
