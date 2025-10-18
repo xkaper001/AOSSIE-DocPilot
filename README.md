@@ -157,6 +157,17 @@ We welcome contributions from the community! Whether you're a developer, designe
 
 Please read our [Contributing Guidelines](./CONTRIBUTING.md) and [Code of Conduct](./CODE_OF_CONDUCT.md) before getting started.
 
+---
+
+## ✨ Contributors
+
+Thanks to all the wonderful contributors 💖
+
+[![Contributors](https://contrib.rocks/image?repo=xkaper001/DocPilot)](https://github.com/xkaper001/DocPilot/graphs/contributors)
+
+---
+
+
 ## 📜 License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
