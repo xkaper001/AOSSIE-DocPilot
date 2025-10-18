@@ -87,6 +87,30 @@ class CustomDropdown<T> extends StatefulWidget {
 }
 
 class _CustomDropdownState<T> extends State<CustomDropdown<T>> {
+  @override
+  void didUpdateWidget(covariant CustomDropdown<T> oldWidget) {
+    super.didUpdateWidget(oldWidget);
+
+    if (widget.initialValue != oldWidget.initialValue || widget.items != oldWidget.items) {
+      setState(() {
+        _selectedValue = widget.initialValue;
+      });
+    }
+
+    if (widget.placeholder != oldWidget.placeholder || widget.initialValue != oldWidget.initialValue) {
+      _searchController.text = '';
+    }
+
+    if (widget.focusNode != oldWidget.focusNode) {
+      _focusNode.removeListener(_handleFocusChange);
+      if (_createdFocusNode) {
+        _focusNode.dispose();
+      }
+      _createdFocusNode = widget.focusNode == null;
+      _focusNode = widget.focusNode ?? FocusNode();
+      _focusNode.addListener(_handleFocusChange);
+    }
+  }
   late FocusNode _focusNode;
   late bool _createdFocusNode;
   T? _selectedValue;
