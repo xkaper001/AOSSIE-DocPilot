@@ -41,6 +41,13 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.19.1"
+  docpilot_core:
+    dependency: "direct main"
+    description:
+      path: "../docpilot_core"
+      relative: true
+    source: path
+    version: "1.0.0"
   fake_async:
     dependency: transitive
     description:
