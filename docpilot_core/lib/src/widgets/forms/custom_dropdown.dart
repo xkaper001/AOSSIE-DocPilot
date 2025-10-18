@@ -96,7 +96,6 @@ class _CustomDropdownState<T> extends State<CustomDropdown<T>> {
     final RenderBox renderBox = context.findRenderObject() as RenderBox;
     final Size size = renderBox.size;
 
-    TextEditingController searchController = TextEditingController();
     String query = '';
 
     _dropdownOverlayEntry = OverlayEntry(
@@ -129,7 +128,6 @@ class _CustomDropdownState<T> extends State<CustomDropdown<T>> {
                           Padding(
                             padding: const EdgeInsets.all(8.0),
                             child: TextField(
-                              controller: searchController,
                               decoration: InputDecoration(
                                 hintText: 'Search...',
                                 prefixIcon: const Icon(Icons.search, size: 20),
@@ -137,7 +135,6 @@ class _CustomDropdownState<T> extends State<CustomDropdown<T>> {
                                     ? IconButton(
                                         icon: const Icon(Icons.clear, size: 20),
                                         onPressed: () {
-                                          searchController.clear();
                                           setState(() {
                                             query = '';
                                           });
@@ -239,7 +236,6 @@ class _CustomDropdownState<T> extends State<CustomDropdown<T>> {
 
     if (widget.placeholder != oldWidget.placeholder ||
         widget.initialValue != oldWidget.initialValue) {
-      _searchController.text = '';
     }
 
     if (widget.focusNode != oldWidget.focusNode) {
@@ -257,7 +253,6 @@ class _CustomDropdownState<T> extends State<CustomDropdown<T>> {
   late bool _createdFocusNode;
   T? _selectedValue;
   bool _isFocused = false;
-  late TextEditingController _searchController;
 
   @override
   void initState() {
@@ -265,7 +260,6 @@ class _CustomDropdownState<T> extends State<CustomDropdown<T>> {
     _selectedValue = widget.initialValue;
     _createdFocusNode = widget.focusNode == null;
     _focusNode = widget.focusNode ?? FocusNode();
-    _searchController = TextEditingController();
 
     // Always listen for focus changes
     _focusNode.addListener(_handleFocusChange);
@@ -273,13 +267,11 @@ class _CustomDropdownState<T> extends State<CustomDropdown<T>> {
 
   @override
   void dispose() {
-    // Always remove listener
+    _removeDropdownOverlay();
     _focusNode.removeListener(_handleFocusChange);
-    // Only dispose if we created the FocusNode
     if (widget.focusNode == null) {
       _focusNode.dispose();
     }
-    _searchController.dispose();
     super.dispose();
   }
 
