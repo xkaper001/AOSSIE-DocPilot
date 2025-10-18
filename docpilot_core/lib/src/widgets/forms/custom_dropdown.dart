@@ -102,18 +102,14 @@ class _CustomDropdownState<T> extends State<CustomDropdown<T>> {
     _focusNode = widget.focusNode ?? FocusNode();
     _searchController = TextEditingController();
 
-    // Only add listener if we created the FocusNode
-    if (_createdFocusNode) {
-      _focusNode.addListener(_handleFocusChange);
-    }
+    // Always listen for focus changes
+    _focusNode.addListener(_handleFocusChange);
   }
 
   @override
   void dispose() {
-    // Always remove listener if we added it
-    if (_createdFocusNode) {
-      _focusNode.removeListener(_handleFocusChange);
-    }
+    // Always remove listener
+    _focusNode.removeListener(_handleFocusChange);
     // Only dispose if we created the FocusNode
     if (widget.focusNode == null) {
       _focusNode.dispose();
@@ -168,101 +164,120 @@ class _CustomDropdownState<T> extends State<CustomDropdown<T>> {
     final Offset offset = renderBox.localToGlobal(Offset.zero);
     final Size size = renderBox.size;
 
-    // Reset search when opening menu
-    _searchQuery = '';
-    _searchController.clear();
-
-    // Get overlay for proper positioning
-    final overlay = Overlay.of(context).context.findRenderObject() as RenderBox;
-    final targetRect = Rect.fromLTWH(
-        offset.dx, offset.dy + size.height + 8, size.width, size.height);
-
-    final T? selected = await showMenu<T>(
+    // Show a custom dialog with search and filtered list
+    final T? selected = await showDialog<T>(
       context: context,
-      position: RelativeRect.fromRect(
-        targetRect,
-        Offset.zero & overlay.size,
-      ),
-      items: [
-        if (widget.enableSearch)
-          PopupMenuItem<T>(
-            enabled: false,
-            child: StatefulBuilder(
-              builder: (context, setState) {
-                return Container(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                  child: TextField(
-                    controller: _searchController,
-                    decoration: InputDecoration(
-                      hintText: 'Search...',
-                      prefixIcon: const Icon(Icons.search, size: 20),
-                      suffixIcon: _searchQuery.isNotEmpty
-                          ? IconButton(
-                              icon: const Icon(Icons.clear, size: 20),
-                              onPressed: () {
-                                _searchController.clear();
-                                setState(() {
-                                  _searchQuery = '';
-                                });
-                              },
-                            )
-                          : null,
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(8),
-                        borderSide: BorderSide(
-                          color: theme.colorScheme.outline,
-                          width: 1,
+      barrierDismissible: true,
+      builder: (dialogContext) {
+        String query = '';
+        TextEditingController searchController = TextEditingController();
+        return StatefulBuilder(
+          builder: (context, setState) {
+            final filteredItems = widget.enableSearch && query.isNotEmpty
+                ? widget.items.where((item) {
+                    final itemText = widget.itemBuilder(item).toLowerCase();
+                    return itemText.contains(query.toLowerCase());
+                  }).toList()
+                : widget.items;
+            return Dialog(
+              insetPadding: EdgeInsets.only(
+                left: offset.dx,
+                top: offset.dy + size.height + 8,
+                right: 24,
+                bottom: 24,
+              ),
+              backgroundColor: theme.colorScheme.surface,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(16),
+              ),
+              child: Container(
+                width: size.width,
+                constraints: BoxConstraints(maxHeight: 400),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    if (widget.enableSearch)
+                      Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: TextField(
+                          controller: searchController,
+                          decoration: InputDecoration(
+                            hintText: 'Search...',
+                            prefixIcon: const Icon(Icons.search, size: 20),
+                            suffixIcon: query.isNotEmpty
+                                ? IconButton(
+                                    icon: const Icon(Icons.clear, size: 20),
+                                    onPressed: () {
+                                      searchController.clear();
+                                      setState(() {
+                                        query = '';
+                                      });
+                                    },
+                                  )
+                                : null,
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(8),
+                              borderSide: BorderSide(
+                                color: theme.colorScheme.outline,
+                                width: 1,
+                              ),
+                            ),
+                            contentPadding: const EdgeInsets.symmetric(
+                              horizontal: 12,
+                              vertical: 8,
+                            ),
+                            isDense: true,
+                          ),
+                          onChanged: (value) {
+                            setState(() {
+                              query = value;
+                            });
+                          },
                         ),
                       ),
-                      contentPadding: const EdgeInsets.symmetric(
-                        horizontal: 12,
-                        vertical: 8,
+                    Flexible(
+                      child: ListView.builder(
+                        shrinkWrap: true,
+                        itemCount: filteredItems.length,
+                        itemBuilder: (context, index) {
+                          final item = filteredItems[index];
+                          final isSelected = item == _selectedValue;
+                          return InkWell(
+                            onTap: () {
+                              Navigator.of(dialogContext).pop(item);
+                            },
+                            borderRadius: BorderRadius.circular(12),
+                            child: Container(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 12,
+                                vertical: 16,
+                              ),
+                              decoration: BoxDecoration(
+                                color: isSelected
+                                    ? theme.colorScheme.primary.withOpacity(0.1)
+                                    : Colors.transparent,
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                              child: Text(
+                                widget.itemBuilder(item),
+                                style: theme.textTheme.bodyMedium?.copyWith(
+                                  color: isSelected
+                                      ? theme.colorScheme.primary
+                                      : theme.colorScheme.onSurface,
+                                ),
+                              ),
+                            ),
+                          );
+                        },
                       ),
-                      isDense: true,
                     ),
-                    onChanged: (value) {
-                      setState(() {
-                        _searchQuery = value;
-                      });
-                    },
-                  ),
-                );
-              },
-            ),
-          ),
-        ..._getFilteredItems().map((item) {
-          final isSelected = item == _selectedValue;
-          return PopupMenuItem<T>(
-            value: item,
-            child: Container(
-              padding: const EdgeInsets.symmetric(
-                horizontal: 12,
-                vertical: 16,
-              ),
-              decoration: BoxDecoration(
-                color: isSelected
-                    ? theme.colorScheme.primary.withOpacity(0.1)
-                    : Colors.transparent,
-                borderRadius: BorderRadius.circular(12),
-              ),
-              child: Text(
-                widget.itemBuilder(item),
-                style: theme.textTheme.bodyMedium?.copyWith(
-                  color: isSelected
-                      ? theme.colorScheme.primary
-                      : theme.colorScheme.onSurface,
+                  ],
                 ),
               ),
-            ),
-          );
-        }).toList(),
-      ],
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(16),
-      ),
-      color: theme.colorScheme.surface,
-      elevation: 8,
+            );
+          },
+        );
+      },
     );
 
     if (selected != null && selected != _selectedValue) {
@@ -329,13 +344,7 @@ class _CustomDropdownState<T> extends State<CustomDropdown<T>> {
               onTap: widget.enabled
                   ? () => _showDropdownMenu(context, field)
                   : null,
-              onFocusChange: _createdFocusNode
-                  ? (focused) {
-                      setState(() {
-                        _isFocused = focused;
-                      });
-                    }
-                  : null,
+              onFocusChange: null,
               focusNode: _focusNode,
               borderRadius: BorderRadius.circular(12),
               child: Container(
