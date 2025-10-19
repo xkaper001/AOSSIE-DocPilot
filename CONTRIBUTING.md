@@ -107,7 +107,7 @@ flutter test --coverage
 
 ## 🎯 Areas for Contribution
 
-We especially welcome contributions in:
+
 
 ### 🏥 Healthcare Features
 - Medical terminology improvements
