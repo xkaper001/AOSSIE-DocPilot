@@ -104,9 +104,10 @@ flutter test --coverage
    - Security considerations
 3. Address review feedback promptly
 4. Be open to suggestions and improvements
+
 ## 🎯 Areas for Contribution
 
-
+We especially welcome contributions in:
 
 ### 🏥 Healthcare Features
 - Medical terminology improvements
