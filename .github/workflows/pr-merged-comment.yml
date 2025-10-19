@@ -1,0 +1,37 @@
+name: PR Merged Thank You Bot
+
+on:
+  pull_request:
+    types: [closed]
+
+jobs:
+  thank-contributor:
+    # Only run if the PR was merged (not just closed)
+    if: github.event.pull_request.merged == true
+    permissions:
+      pull-requests: write
+    runs-on: ubuntu-latest
+    steps:
+      - name: Add thank you comment to merged PR
+        uses: actions/github-script@v8
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const messages = [
+              "🎉 Awesome work, @{author}! Your PR has been merged successfully! 🚀\n\nThank you for contributing to DocPilot and making it better for everyone! Your efforts are truly appreciated. Keep up the great work! 💪✨",
+              "🌟 Congratulations, @{author}! Your contribution has been merged! 🎊\n\nYour dedication to improving DocPilot is amazing! Thank you for being part of our community. We're lucky to have contributors like you! 🙌💙",
+              "🚀 Fantastic job, @{author}! Your PR is now merged! 🎯\n\nEvery contribution makes DocPilot stronger, and yours is no exception! Thank you for your valuable input and keep the awesome PRs coming! 🌈✨",
+              "✨ Amazing contribution, @{author}! Successfully merged! 🎉\n\nYour code is now part of DocPilot! Thank you for sharing your expertise and helping us build something great together! 🏆💻",
+              "🎊 Well done, @{author}! Your PR has been merged into the project! 🚀\n\nThank you for your hard work and dedication! Contributors like you make open source truly special. Keep being awesome! 💫🙏"
+            ];
+            
+            const author = context.payload.pull_request.user.login;
+            const randomMessage = messages[Math.floor(Math.random() * messages.length)];
+            const personalizedMessage = randomMessage.replace('{author}', author);
+            
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: personalizedMessage
+            });
