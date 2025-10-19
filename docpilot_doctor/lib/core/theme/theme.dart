@@ -6,6 +6,7 @@
 /// ```dart
 /// import 'package:docpilot_doctor/core/theme/theme.dart';
 /// ```
+library;
 
 export 'palette.dart';
 export 'app_theme.dart';
