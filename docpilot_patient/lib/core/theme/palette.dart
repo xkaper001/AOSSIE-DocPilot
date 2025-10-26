@@ -1,3 +1,4 @@
+import 'package:docpilot_core/docpilot_core.dart';
 import 'package:flutter/material.dart';
 
 /// DocPilot Color Palette
@@ -16,33 +17,33 @@ class Palette {
   static const Color primaryLightest = Color(0xFFF9D8F5);
 
   // Neutral Light Colors
-  static const Color neutralLightDarkest = Color(0xFFC5C6CC);
-  static const Color neutralLightDark = Color(0xFFD4D6DD);
-  static const Color neutralLightMedium = Color(0xFFE8E9F1);
-  static const Color neutralLightLight = Color(0xFFF8F9FE);
-  static const Color neutralLightLightest = Color(0xFFFFFFFF);
+  static const Color neutralLightDarkest = ThemeHelper.neutralLightDarkest;
+  static const Color neutralLightDark = ThemeHelper.neutralLightDark;
+  static const Color neutralLightMedium = ThemeHelper.neutralLightMedium;
+  static const Color neutralLightLight = ThemeHelper.neutralLightLight;
+  static const Color neutralLightLightest = ThemeHelper.neutralLightLightest;
 
   // Neutral Dark Colors
-  static const Color neutralDarkDarkest = Color(0xFF1F2024);
-  static const Color neutralDarkDark = Color(0xFF2F3036);
-  static const Color neutralDarkMedium = Color(0xFF494A50);
-  static const Color neutralDarkLight = Color(0xFF71727A);
-  static const Color neutralDarkLightest = Color(0xFF8F9098);
+  static const Color neutralDarkDarkest = ThemeHelper.neutralDarkDarkest;
+  static const Color neutralDarkDark = ThemeHelper.neutralDarkDark;
+  static const Color neutralDarkMedium = ThemeHelper.neutralDarkMedium;
+  static const Color neutralDarkLight = ThemeHelper.neutralDarkLight;
+  static const Color neutralDarkLightest = ThemeHelper.neutralDarkLightest;
 
   // Success Colors
-  static const Color successDark = Color(0xFF147D64);
-  static const Color successMedium = Color(0xFF3AC0A0);
-  static const Color successLight = Color(0xFFE7F4E8);
+  static const Color successDark = ThemeHelper.successDark;
+  static const Color successMedium = ThemeHelper.successMedium;
+  static const Color successLight = ThemeHelper.successLight;
 
   // Warning Colors
-  static const Color warningDark = Color(0xFFE86339);
-  static const Color warningMedium = Color(0xFFFFB37C);
-  static const Color warningLight = Color(0xFFFFF4E4);
+  static const Color warningDark = ThemeHelper.warningDark;
+  static const Color warningMedium = ThemeHelper.warningMedium;
+  static const Color warningLight = ThemeHelper.warningLight;
 
   // Error Colors
-  static const Color errorDark = Color(0xFFED3241);
-  static const Color errorMedium = Color(0xFFFF616D);
-  static const Color errorLight = Color(0xFFFFE2E5);
+  static const Color errorDark = ThemeHelper.errorDark;
+  static const Color errorMedium = ThemeHelper.errorMedium;
+  static const Color errorLight = ThemeHelper.errorLight;
 
   // Semantic Colors (for easier access)
   static const Color primary = primaryDarkest;
