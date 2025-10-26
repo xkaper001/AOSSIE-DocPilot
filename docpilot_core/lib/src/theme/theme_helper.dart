@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'text_style.dart';
 
 /// Helper utilities for building consistent theme configurations across DocPilot apps.
 ///
@@ -17,6 +18,35 @@ class ThemeHelper {
   static const double borderRadiusMedium = 8.0;
   static const double borderRadiusLarge = 12.0;
   static const double borderRadiusXLarge = 16.0;
+
+  // Neutral Light Colors
+  static const Color neutralLightDarkest = Color(0xFFC5C6CC);
+  static const Color neutralLightDark = Color(0xFFD4D6DD);
+  static const Color neutralLightMedium = Color(0xFFE8E9F1);
+  static const Color neutralLightLight = Color(0xFFF8F9FE);
+  static const Color neutralLightLightest = Color(0xFFFFFFFF);
+
+  // Neutral Dark Colors
+  static const Color neutralDarkDarkest = Color(0xFF1F2024);
+  static const Color neutralDarkDark = Color(0xFF2F3036);
+  static const Color neutralDarkMedium = Color(0xFF494A50);
+  static const Color neutralDarkLight = Color(0xFF71727A);
+  static const Color neutralDarkLightest = Color(0xFF8F9098);
+
+  // Success Colors
+  static const Color successDark = Color(0xFF147D64);
+  static const Color successMedium = Color(0xFF3AC0A0);
+  static const Color successLight = Color(0xFFE7F4E8);
+
+  // Warning Colors
+  static const Color warningDark = Color(0xFFE86339);
+  static const Color warningMedium = Color(0xFFFFB37C);
+  static const Color warningLight = Color(0xFFFFF4E4);
+
+  // Error Colors
+  static const Color errorDark = Color(0xFFED3241);
+  static const Color errorMedium = Color(0xFFFF616D);
+  static const Color errorLight = Color(0xFFFFE2E5);
 
   /// Input height
   static const double inputHeight = 48.0;
@@ -70,14 +100,72 @@ class ThemeHelper {
       brightness: brightness,
       primaryColor: primaryColor,
       fontFamily: fontFamily,
-      
       colorScheme: ColorScheme.fromSeed(
         seedColor: primaryColor,
         brightness: brightness,
         // Customize specific colors
         primary: primaryColor,
       ),
-      
+      filledButtonTheme: FilledButtonThemeData(
+        style: FilledButton.styleFrom(
+          backgroundColor: primaryColor,
+          foregroundColor: Colors.white,
+          padding: const EdgeInsets.symmetric(
+            horizontal: spacingXLarge,
+            vertical: spacingMedium,
+          ),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(borderRadiusXLarge),
+          ),
+          elevation: 0,
+        ),
+      ),
+
+      outlinedButtonTheme: OutlinedButtonThemeData(
+        style: OutlinedButton.styleFrom(
+          foregroundColor: primaryColor,
+          side: BorderSide(color: primaryColor),
+          padding: const EdgeInsets.symmetric(
+            horizontal: spacingXLarge,
+            vertical: spacingMedium,
+          ),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(borderRadiusXLarge),
+          ),
+        ),
+      ),
+
+      textButtonTheme: TextButtonThemeData(
+        style: TextButton.styleFrom(
+          foregroundColor: primaryColor,
+          padding: const EdgeInsets.symmetric(
+            horizontal: spacingMedium,
+            vertical: spacingSmall,
+          ),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(borderRadiusXLarge),
+          ),
+        ),
+      ),
+
+      progressIndicatorTheme: ProgressIndicatorThemeData(
+        color: primaryColor,
+        borderRadius: BorderRadius.circular(borderRadiusSmall),
+        circularTrackColor: neutralLightMedium,
+        strokeWidth: 5.0,
+        strokeAlign: BorderSide.strokeAlignCenter,
+        strokeCap: StrokeCap.round,
+        circularTrackPadding: EdgeInsets.all(2.0),
+        constraints: BoxConstraints(
+          maxWidth: 32.0,
+          maxHeight: 32.0,
+          minHeight: 16.0,
+          minWidth: 16.0,
+        ),
+        linearTrackColor: neutralLightMedium,
+        linearMinHeight: 6,
+      ),
+
       // Input decoration theme - no borders since components handle their own
       inputDecorationTheme: const InputDecorationTheme(
         border: InputBorder.none,
@@ -87,7 +175,22 @@ class ThemeHelper {
         disabledBorder: InputBorder.none,
         focusedErrorBorder: InputBorder.none,
       ),
-      
+      navigationBarTheme: NavigationBarThemeData(
+        backgroundColor: neutralLightLightest,
+        indicatorColor: neutralLightLightest,
+        overlayColor: WidgetStatePropertyAll(Colors.transparent),
+        labelTextStyle: WidgetStateProperty.resolveWith<TextStyle>(
+          (states) {
+            if (states.contains(WidgetState.selected)) {
+              return DocPilotTextStyles.actionM
+                  .copyWith(color: neutralDarkDarkest);
+            }
+            return DocPilotTextStyles.bodyXS
+                .copyWith(color: neutralDarkDarkest);
+          },
+        ),
+      ),
+
       // Text theme with Inter font
       textTheme: TextTheme(
         // Display styles
@@ -106,7 +209,7 @@ class ThemeHelper {
           fontWeight: FontWeight.w400,
           fontFamily: fontFamily,
         ),
-        
+
         // Headline styles
         headlineLarge: TextStyle(
           fontSize: 32,
@@ -123,7 +226,7 @@ class ThemeHelper {
           fontWeight: FontWeight.w600,
           fontFamily: fontFamily,
         ),
-        
+
         // Title styles
         titleLarge: TextStyle(
           fontSize: 20,
@@ -140,7 +243,7 @@ class ThemeHelper {
           fontWeight: FontWeight.w600,
           fontFamily: fontFamily,
         ),
-        
+
         // Body styles
         bodyLarge: TextStyle(
           fontSize: 16,
@@ -157,7 +260,7 @@ class ThemeHelper {
           fontWeight: FontWeight.w400,
           fontFamily: fontFamily,
         ),
-        
+
         // Label styles
         labelLarge: TextStyle(
           fontSize: 14,

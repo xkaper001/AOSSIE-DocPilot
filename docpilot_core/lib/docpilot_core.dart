@@ -34,3 +34,5 @@ export 'src/validators/form_validators.dart';
 // Theme utilities
 export 'src/theme/theme_helper.dart';
 
+export 'src/theme/text_style.dart';
+

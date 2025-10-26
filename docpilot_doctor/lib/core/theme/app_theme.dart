@@ -187,58 +187,8 @@ class AppTheme {
       primaryColor: Palette.primary,
       fontFamily: fontFamily,
     );
-    
+
     // Customize with doctor app specific colors
-    return baseTheme.copyWith(
-      scaffoldBackgroundColor: Palette.background,
-      
-      // AppBar Theme
-      appBarTheme: const AppBarTheme(
-        backgroundColor: Palette.background,
-        foregroundColor: Palette.textPrimary,
-        elevation: 0,
-        centerTitle: false,
-      ),
-      
-      // Button Themes with doctor app colors
-      elevatedButtonTheme: ElevatedButtonThemeData(
-        style: ElevatedButton.styleFrom(
-          backgroundColor: Palette.primary,
-          foregroundColor: Palette.neutralLightLightest,
-          padding: const EdgeInsets.symmetric(
-            horizontal: spacingXLarge,
-            vertical: spacingMedium,
-          ),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(borderRadiusXLarge),
-          ),
-          elevation: 0,
-        ),
-      ),
-      
-      outlinedButtonTheme: OutlinedButtonThemeData(
-        style: OutlinedButton.styleFrom(
-          foregroundColor: Palette.primary,
-          side: const BorderSide(color: Palette.primary),
-          padding: const EdgeInsets.symmetric(
-            horizontal: spacingXLarge,
-            vertical: spacingMedium,
-          ),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(borderRadiusXLarge),
-          ),
-        ),
-      ),
-      
-      textButtonTheme: TextButtonThemeData(
-        style: TextButton.styleFrom(
-          foregroundColor: Palette.primary,
-          padding: const EdgeInsets.symmetric(
-            horizontal: spacingMedium,
-            vertical: spacingSmall,
-          ),
-        ),
-      ),
-    );
+    return baseTheme.copyWith();
   }
 }
