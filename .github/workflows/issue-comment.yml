@@ -1,0 +1,23 @@
+name: Issue Auto-Reply Bot
+
+on:
+  issues:
+    types: [opened]
+
+jobs:
+  add-comment:
+    permissions:
+      issues: write
+    runs-on: ubuntu-latest
+    steps:
+      - name: Add comment to new issue
+        uses: actions/github-script@v8
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: "👋 Thanks for opening this issue and contributing!\n\nOur reviewers will check it soon 🚀\n\n📘 If you’d like to know more about contributing, please read our [CONTRIBUTING.md](./CONTRIBUTING.md)."
+            })
