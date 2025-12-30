@@ -1,17 +1,4 @@
-<!-- GSSoC banner and project insights -->
-<h1 align="center">
-  DocPilot
-</h1>
-
-<p align="center">
-  <b>This project is now OFFICIALLY accepted for:</b>
-</p>
-
-<div align="center">
-  <img src="docs/assets/gssoc.png" alt="GSSOC" width="80%">
-</div>
-
-<table align="center">
+<!-- <table align="center">
     <thead align="center">
         <tr>
             <td><b>🌟 Stars</b></td>
@@ -34,14 +21,14 @@
             <td><img alt="Contributors Count" src="https://img.shields.io/github/contributors/xkaper001/DocPilot?style=flat&color=blue&logo=github"/></td>
         </tr>
     </tbody>
-</table>
+</table> -->
 
 <div align="center">
 <h1> 🩺 DocPilot - A Next Gen EMR App </h1>
 
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+<!-- [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Flutter](https://img.shields.io/badge/Flutter-02569B?style=flat&logo=flutter&logoColor=white)](https://flutter.dev)
-[![Contributions Welcome](https://img.shields.io/badge/contributions-welcome-brightgreen.svg?style=flat)](CONTRIBUTING.md)
+[![Contributions Welcome](https://img.shields.io/badge/contributions-welcome-brightgreen.svg?style=flat)](CONTRIBUTING.md) -->
 
 </div>
 
