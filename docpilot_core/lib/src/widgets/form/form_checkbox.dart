@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-/// Size options for CustomCheckbox
+/// Size options for FormCheckbox
 enum CheckboxSize {
   /// Small checkbox (16x16)
   small,
@@ -26,14 +26,14 @@ enum CheckboxSize {
 ///
 /// Example:
 /// ```dart
-/// CustomCheckbox(
+/// FormCheckbox(
 ///   label: 'I agree to the terms and conditions',
 ///   size: CheckboxSize.medium,
 ///   value: isChecked,
 ///   onChanged: (value) => setState(() => isChecked = value),
 /// )
 /// ```
-class CustomCheckbox extends StatelessWidget {
+class FormCheckbox extends StatelessWidget {
   /// Whether the checkbox is checked
   final bool value;
 
@@ -52,7 +52,7 @@ class CustomCheckbox extends StatelessWidget {
   /// Focus node for managing focus
   final FocusNode? focusNode;
 
-  const CustomCheckbox({
+  const FormCheckbox({
     super.key,
     required this.value,
     this.onChanged,
@@ -104,12 +104,12 @@ class CustomCheckbox extends StatelessWidget {
     final theme = Theme.of(context);
     final primaryColor = theme.primaryColor;
     final textTheme = theme.textTheme;
-    
+
     // Neutral colors from theme
     final borderColor = theme.colorScheme.outline;
     final borderLightColor = theme.colorScheme.outlineVariant;
     final disabledColor = theme.disabledColor;
-    
+
     final checkboxSize = _getSize();
     final borderRadius = _getBorderRadius();
     final iconSize = _getIconSize();
@@ -166,18 +166,18 @@ class CustomCheckbox extends StatelessWidget {
   }
 }
 
-/// A form field wrapper for CustomCheckbox with validation support.
+/// A form field wrapper for FormCheckbox with validation support.
 ///
 /// Example:
 /// ```dart
-/// CustomCheckboxFormField(
+/// FormCheckboxFormField(
 ///   label: 'I agree to the terms',
 ///   validator: (value) => value ? null : 'You must agree to continue',
 ///   onSaved: (value) => print('Saved: $value'),
 /// )
 /// ```
-class CustomCheckboxFormField extends FormField<bool> {
-  CustomCheckboxFormField({
+class FormCheckboxFormField extends FormField<bool> {
+  FormCheckboxFormField({
     super.key,
     String? label,
     CheckboxSize size = CheckboxSize.medium,
@@ -193,7 +193,7 @@ class CustomCheckboxFormField extends FormField<bool> {
               crossAxisAlignment: CrossAxisAlignment.start,
               mainAxisSize: MainAxisSize.min,
               children: [
-                CustomCheckbox(
+                FormCheckbox(
                   value: state.value ?? false,
                   onChanged: enabled
                       ? (value) {
@@ -205,7 +205,7 @@ class CustomCheckboxFormField extends FormField<bool> {
                   size: size,
                   enabled: enabled,
                 ),
-                
+
                 // Error text
                 if (state.hasError) ...[
                   const SizedBox(height: 8),

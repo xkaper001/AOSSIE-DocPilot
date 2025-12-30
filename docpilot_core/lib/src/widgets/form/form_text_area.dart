@@ -16,7 +16,7 @@ import 'package:flutter/services.dart';
 ///
 /// Example:
 /// ```dart
-/// CustomTextArea(
+/// FormTextArea(
 ///   label: 'Description',
 ///   placeholder: 'Enter your description',
 ///   minLines: 3,
@@ -24,7 +24,7 @@ import 'package:flutter/services.dart';
 ///   validator: (value) => value?.isEmpty ?? true ? 'Required' : null,
 /// )
 /// ```
-class CustomTextArea extends StatefulWidget {
+class FormTextArea extends StatefulWidget {
   /// The label text displayed above the field
   final String? label;
 
@@ -85,7 +85,7 @@ class CustomTextArea extends StatefulWidget {
   /// Text capitalization
   final TextCapitalization textCapitalization;
 
-  const CustomTextArea({
+  const FormTextArea({
     super.key,
     this.label,
     this.placeholder,
@@ -110,10 +110,10 @@ class CustomTextArea extends StatefulWidget {
   });
 
   @override
-  State<CustomTextArea> createState() => _CustomTextAreaState();
+  State<FormTextArea> createState() => _FormTextAreaState();
 }
 
-class _CustomTextAreaState extends State<CustomTextArea> {
+class _FormTextAreaState extends State<FormTextArea> {
   late TextEditingController _controller;
   late FocusNode _focusNode;
   late bool _createdController;

@@ -71,7 +71,7 @@ Container(
 
 With the shared library, apps should:
 - ✅ Import components from `docpilot_core`
-- ❌ NOT create their own `CustomTextField`, `CustomCheckbox`, etc.
+- ❌ NOT create their own `FormTextField`, `FormCheckbox`, etc.
 - ✅ Keep their own `Palette` and `AppTheme` for app-specific colors
 
 ## Usage Guide
@@ -116,12 +116,12 @@ class MyForm extends StatelessWidget {
     return Column(
       children: [
         // Components automatically use your app's theme
-        CustomTextField(
+        FormTextField(
           label: 'Email',
           validator: FormValidators.email,
         ),
         
-        CustomCheckbox(
+        FormCheckbox(
           label: 'I agree',
           value: true,
           onChanged: (val) {},
@@ -184,11 +184,11 @@ class AppTheme {
 
 | Component | Description | Key Features |
 |-----------|-------------|--------------|
-| `CustomTextField` | Single-line text input | Validation, icons, auto-focus |
-| `CustomTextArea` | Multi-line text input | Min/max lines, character counter |
-| `CustomDropdown<T>` | Dropdown selector | Type-safe, custom item builder |
-| `CustomCheckbox` | Checkbox with label | 3 sizes (small/medium/large) |
-| `CustomDatePicker` | Date selection | Date validation, range limits |
+| `FormTextField` | Single-line text input | Validation, icons, auto-focus |
+| `FormTextArea` | Multi-line text input | Min/max lines, character counter |
+| `FormDropdown<T>` | Dropdown selector | Type-safe, custom item builder |
+| `FormCheckbox` | Checkbox with label | 3 sizes (small/medium/large) |
+| `FormDatePicker` | Date selection | Date validation, range limits |
 
 ### Validators
 

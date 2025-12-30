@@ -16,7 +16,7 @@ import 'package:flutter/material.dart';
 ///
 /// Example:
 /// ```dart
-/// CustomDropdown<String>(
+/// FormDropdown<String>(
 ///   label: 'Country',
 ///   placeholder: 'Select your country',
 ///   items: ['USA', 'UK', 'Canada'],
@@ -25,7 +25,7 @@ import 'package:flutter/material.dart';
 ///   enableSearch: true,
 /// )
 /// ```
-class CustomDropdown<T> extends StatefulWidget {
+class FormDropdown<T> extends StatefulWidget {
   /// The label text displayed above the field
   final String? label;
 
@@ -65,7 +65,7 @@ class CustomDropdown<T> extends StatefulWidget {
   /// Whether to show search functionality (for large lists)
   final bool enableSearch;
 
-  const CustomDropdown({
+  const FormDropdown({
     super.key,
     this.label,
     this.placeholder,
@@ -83,10 +83,10 @@ class CustomDropdown<T> extends StatefulWidget {
   });
 
   @override
-  State<CustomDropdown<T>> createState() => _CustomDropdownState<T>();
+  State<FormDropdown<T>> createState() => _FormDropdownState<T>();
 }
 
-class _CustomDropdownState<T> extends State<CustomDropdown<T>> {
+class _FormDropdownState<T> extends State<FormDropdown<T>> {
   final LayerLink _layerLink = LayerLink();
   OverlayEntry? _dropdownOverlayEntry;
 
@@ -224,7 +224,7 @@ class _CustomDropdownState<T> extends State<CustomDropdown<T>> {
   }
 
   @override
-  void didUpdateWidget(covariant CustomDropdown<T> oldWidget) {
+  void didUpdateWidget(covariant FormDropdown<T> oldWidget) {
     super.didUpdateWidget(oldWidget);
 
     if (widget.initialValue != oldWidget.initialValue ||
@@ -235,8 +235,7 @@ class _CustomDropdownState<T> extends State<CustomDropdown<T>> {
     }
 
     if (widget.placeholder != oldWidget.placeholder ||
-        widget.initialValue != oldWidget.initialValue) {
-    }
+        widget.initialValue != oldWidget.initialValue) {}
 
     if (widget.focusNode != oldWidget.focusNode) {
       _focusNode.removeListener(_handleFocusChange);

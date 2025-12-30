@@ -25,14 +25,13 @@
 
 library docpilot_core;
 
-// Form widgets
-export 'src/widgets/forms/forms.dart';
+// Widgets
+export 'src/widgets/widgets.dart';
 
 // Validators
-export 'src/validators/form_validators.dart';
+export 'src/validators/form_validators.dart' show FormValidators;
 
 // Theme utilities
-export 'src/theme/theme_helper.dart';
-
-export 'src/theme/text_style.dart';
+export 'src/theme/theme_helper.dart' show ThemeHelper;
+export 'src/theme/text_style.dart' show DocPilotTextStyles;
 

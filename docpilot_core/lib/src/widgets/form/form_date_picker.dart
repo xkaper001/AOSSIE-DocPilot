@@ -15,14 +15,14 @@ import 'package:flutter/material.dart';
 ///
 /// Example:
 /// ```dart
-/// CustomDatePicker(
+/// FormDatePicker(
 ///   label: 'Date of Birth',
 ///   placeholder: 'Select your date of birth',
 ///   onDateSelected: (date) => print(date),
 ///   validator: (date) => date == null ? 'Date is required' : null,
 /// )
 /// ```
-class CustomDatePicker extends StatefulWidget {
+class FormDatePicker extends StatefulWidget {
   /// The label text displayed above the field
   final String? label;
 
@@ -62,7 +62,7 @@ class CustomDatePicker extends StatefulWidget {
   /// Icon to display on the right side
   final IconData? suffixIcon;
 
-  const CustomDatePicker({
+  const FormDatePicker({
     super.key,
     this.label,
     this.placeholder,
@@ -80,10 +80,10 @@ class CustomDatePicker extends StatefulWidget {
   });
 
   @override
-  State<CustomDatePicker> createState() => _CustomDatePickerState();
+  State<FormDatePicker> createState() => _FormDatePickerState();
 }
 
-class _CustomDatePickerState extends State<CustomDatePicker> {
+class _FormDatePickerState extends State<FormDatePicker> {
   late FocusNode _focusNode;
   late bool _createdFocusNode;
   DateTime? _selectedDate;
@@ -95,7 +95,7 @@ class _CustomDatePickerState extends State<CustomDatePicker> {
     _selectedDate = widget.initialDate;
     _createdFocusNode = widget.focusNode == null;
     _focusNode = widget.focusNode ?? FocusNode();
-    
+
     // Only add listener if we created the FocusNode
     if (_createdFocusNode) {
       _focusNode.addListener(_handleFocusChange);
@@ -201,7 +201,8 @@ class _CustomDatePickerState extends State<CustomDatePicker> {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final textTheme = theme.textTheme;
-    final computedError = widget.errorText ?? widget.validator?.call(_selectedDate);
+    final computedError =
+        widget.errorText ?? widget.validator?.call(_selectedDate);
     final hasError = computedError != null;
     final hasValue = _selectedDate != null;
 
@@ -237,11 +238,13 @@ class _CustomDatePickerState extends State<CustomDatePicker> {
         // Date Picker Field
         InkWell(
           onTap: widget.enabled ? () => _selectDate(context) : null,
-          onFocusChange: _createdFocusNode ? (focused) {
-            setState(() {
-              _isFocused = focused;
-            });
-          } : null,
+          onFocusChange: _createdFocusNode
+              ? (focused) {
+                  setState(() {
+                    _isFocused = focused;
+                  });
+                }
+              : null,
           focusNode: _focusNode,
           borderRadius: BorderRadius.circular(12),
           child: Container(
@@ -283,9 +286,7 @@ class _CustomDatePickerState extends State<CustomDatePicker> {
         if (widget.helperText != null || hasError) ...[
           const SizedBox(height: 8),
           Text(
-            hasError 
-                ? computedError
-                : (widget.helperText ?? ''),
+            hasError ? computedError : (widget.helperText ?? ''),
             style: hasError ? errorStyle : helperStyle,
             maxLines: 2,
             overflow: TextOverflow.ellipsis,

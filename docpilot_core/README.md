@@ -14,11 +14,11 @@ This package provides a consistent set of form components, validators, and theme
 ## Features
 
 ### 📝 Form Components
-- `CustomTextField` - Single-line text input with validation
-- `CustomTextArea` - Multi-line text input
-- `CustomDropdown` - Dropdown selection field
-- `CustomCheckbox` - Checkbox with multiple sizes
-- `CustomDatePicker` - Date selection field
+- `FormTextField` - Single-line text input with validation
+- `FormTextArea` - Multi-line text input
+- `FormDropdown` - Dropdown selection field
+- `FormCheckbox` - Checkbox with multiple sizes
+- `FormDatePicker` - Date selection field
 
 ### ✅ Validators
 - Email validation
@@ -69,21 +69,21 @@ MaterialApp(
 )
 
 // Use components in your forms
-CustomTextField(
+FormTextField(
   label: 'Email',
   placeholder: 'Enter your email',
   validator: FormValidators.email,
   onChanged: (value) => print(value),
 )
 
-CustomDropdown<String>(
+FormDropdown<String>(
   label: 'Country',
   items: ['USA', 'UK', 'Canada'],
   itemBuilder: (item) => item,
   onChanged: (value) => print(value),
 )
 
-CustomCheckbox(
+FormCheckbox(
   label: 'I agree to terms',
   value: agreedToTerms,
   onChanged: (value) => setState(() => agreedToTerms = value),
@@ -93,18 +93,18 @@ CustomCheckbox(
 ### Using Validators
 
 ```dart
-CustomTextField(
+FormTextField(
   label: 'Email',
   validator: FormValidators.email,
 )
 
-CustomTextField(
+FormTextField(
   label: 'Password',
   validator: FormValidators.password,
   obscureText: true,
 )
 
-CustomTextField(
+FormTextField(
   label: 'Phone',
   validator: FormValidators.phoneNumber,
   keyboardType: TextInputType.phone,
@@ -113,12 +113,12 @@ CustomTextField(
 
 ## Component Documentation
 
-### CustomTextField
+### FormTextField
 
 Single-line text input with comprehensive validation support.
 
 ```dart
-CustomTextField(
+FormTextField(
   label: 'Full Name',
   placeholder: 'Enter your full name',
   helperText: 'First and last name',
@@ -128,12 +128,12 @@ CustomTextField(
 )
 ```
 
-### CustomTextArea
+### FormTextArea
 
 Multi-line text input for longer content.
 
 ```dart
-CustomTextArea(
+FormTextArea(
   label: 'Description',
   placeholder: 'Enter description',
   minLines: 3,
@@ -142,12 +142,12 @@ CustomTextArea(
 )
 ```
 
-### CustomDropdown
+### FormDropdown
 
 Dropdown menu with type-safe selection.
 
 ```dart
-CustomDropdown<String>(
+FormDropdown<String>(
   label: 'Blood Type',
   items: ['A+', 'A-', 'B+', 'B-', 'O+', 'O-', 'AB+', 'AB-'],
   itemBuilder: (item) => item,
@@ -155,12 +155,12 @@ CustomDropdown<String>(
 )
 ```
 
-### CustomCheckbox
+### FormCheckbox
 
 Checkbox with three size options.
 
 ```dart
-CustomCheckbox(
+FormCheckbox(
   label: 'Subscribe to newsletter',
   value: subscribed,
   size: CheckboxSize.medium,
@@ -168,12 +168,12 @@ CustomCheckbox(
 )
 ```
 
-### CustomDatePicker
+### FormDatePicker
 
 Date picker optimized for date of birth and date selection.
 
 ```dart
-CustomDatePicker(
+FormDatePicker(
   label: 'Date of Birth',
   placeholder: 'Select your date of birth',
   firstDate: DateTime(1900),
@@ -199,7 +199,7 @@ CustomDatePicker(
 You can also provide custom validators:
 
 ```dart
-CustomTextField(
+FormTextField(
   validator: (value) {
     if (value == null || value.isEmpty) {
       return 'This field is required';

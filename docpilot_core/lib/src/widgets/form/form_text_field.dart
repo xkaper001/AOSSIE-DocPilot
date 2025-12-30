@@ -16,14 +16,14 @@ import 'package:flutter/services.dart';
 ///
 /// Example:
 /// ```dart
-/// CustomTextField(
+/// FormTextField(
 ///   label: 'Email',
 ///   placeholder: 'Enter your email',
 ///   validator: FormValidators.email,
 ///   onChanged: (value) => print(value),
 /// )
 /// ```
-class CustomTextField extends StatefulWidget {
+class FormTextField extends StatefulWidget {
   /// The label text displayed above the field
   final String? label;
 
@@ -90,7 +90,7 @@ class CustomTextField extends StatefulWidget {
   /// Text capitalization
   final TextCapitalization textCapitalization;
 
-  const CustomTextField({
+  const FormTextField({
     super.key,
     this.label,
     this.placeholder,
@@ -118,10 +118,10 @@ class CustomTextField extends StatefulWidget {
             'obscureText cannot be true when maxLines is not 1');
 
   @override
-  State<CustomTextField> createState() => _CustomTextFieldState();
+  State<FormTextField> createState() => _FormTextFieldState();
 }
 
-class _CustomTextFieldState extends State<CustomTextField> {
+class _FormTextFieldState extends State<FormTextField> {
   late TextEditingController _controller;
   late FocusNode _focusNode;
   late bool _createdController;
