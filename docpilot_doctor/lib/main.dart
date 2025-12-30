@@ -13,6 +13,7 @@ class MainApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp.router(
+      debugShowCheckedModeBanner: false,
       title: 'DocPilot Doctor',
       routerConfig: appRouter,
       theme: AppTheme.lightTheme,
