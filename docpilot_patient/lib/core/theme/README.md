@@ -319,7 +319,7 @@ If you need to add new colors or styles:
 
 ## Component Usage
 
-All form components (`CustomTextField`, `CustomDropdown`, `CustomCheckbox`, etc.) already use the theme system internally. When creating new components, follow their pattern:
+All form components (`FormTextField`, `FormDropdown`, `FormCheckbox`, etc.) already use the theme system internally. When creating new components, follow their pattern:
 
 ```dart
 import '../../theme/palette.dart';

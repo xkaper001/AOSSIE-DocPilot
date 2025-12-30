@@ -1,49 +1,64 @@
+import 'package:docpilot_doctor/features/calendar/presentation/screens/calendar_screen.dart';
+import 'package:docpilot_doctor/features/dashboard/presentation/screens/dashboard.dart';
+import 'package:docpilot_doctor/features/patient/presentation/screens/patient_screen.dart';
+import 'package:docpilot_doctor/features/prescription/presentation/screens/prescribe_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
-/// The route configuration for the DocPilot Doctor app.
-final GoRouter appRouter = GoRouter(
-  initialLocation: '/',
-  routes: [
-    GoRoute(
-      path: '/',
-      name: 'home',
-      builder: (context, state) => const HomeScreen(),
-    ),
-  ],
-  errorBuilder: (context, state) => const ErrorScreen(),
+import '../../main_frame.dart';
+
+final GlobalKey<NavigatorState> _rootNavigatorKey = GlobalKey<NavigatorState>(
+  debugLabel: 'root',
 );
 
-/// Home screen for DocPilot Doctor
-class HomeScreen extends StatelessWidget {
-  const HomeScreen({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('DocPilot Doctor'),
-      ),
-      body: const Center(
-        child: Text('Welcome to DocPilot Doctor!'),
-      ),
-    );
-  }
-}
-
-/// Error screen for handling navigation errors
-class ErrorScreen extends StatelessWidget {
-  const ErrorScreen({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Error'),
-      ),
-      body: const Center(
-        child: Text('Page not found'),
-      ),
-    );
-  }
-}
+final GoRouter appRouter = GoRouter(
+  navigatorKey: _rootNavigatorKey,
+  initialLocation: '/dashboard',
+  debugLogDiagnostics: true,
+  routes: [
+    // GoRoute(
+    //   path: '/',
+    //   name: 'home',
+    //   builder: (context, state) => const HomeScreen(),
+    // ),
+    StatefulShellRoute.indexedStack(
+      builder: (context, state, navigationShell) {
+        return MainFrame(navigationShell: navigationShell);
+      },
+      branches: [
+        StatefulShellBranch(
+          routes: [
+            GoRoute(
+              path: '/patients',
+              builder: (context, state) => PatientScreen(),
+            ),
+          ],
+        ),
+        StatefulShellBranch(
+          routes: [
+            GoRoute(
+              path: '/dashboard',
+              builder: (context, state) => Dashboard(),
+            ),
+          ],
+        ),
+        StatefulShellBranch(
+          routes: [
+            GoRoute(
+              path: '/calendar',
+              builder: (context, state) => CalendarScreen(),
+            ),
+          ],
+        ),
+        StatefulShellBranch(
+          routes: [
+            GoRoute(
+              path: '/prescribe',
+              builder: (context, state) => PrescribeScreen(),
+            ),
+          ],
+        ),
+      ],
+    ),
+  ],
+);
